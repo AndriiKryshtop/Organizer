@@ -8,7 +8,6 @@ package ua.sumdu.j2se.kryshtop.tasks;
  **/
 public class ArrayTaskList extends TaskList {
     private Task taskList[] = new Task[10];
-    private int size;
 
     public void add(Task task){
         System.out.println("Trying to add task: " + task.getTitle());
@@ -53,16 +52,6 @@ public class ArrayTaskList extends TaskList {
     }
     //TODO: make an exception for getTask - going beyond the bounds of the array
     //TODO: make an exception for getTask - taskList[index] can return NULL
-
-
-    /**
-     * To get number of records in the task list
-     * @return number of records in this task list
-     */
-    public int size(){
-        return this.size;
-    }
-
 
     /**
      * To change size of task list

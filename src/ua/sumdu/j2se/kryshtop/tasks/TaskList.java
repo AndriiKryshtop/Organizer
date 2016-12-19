@@ -4,6 +4,8 @@ package ua.sumdu.j2se.kryshtop.tasks;
  * Created by user on 08.12.2016.
  */
 public abstract class TaskList {
+    protected int size;
+
     public abstract void add(Task task);
 
     public abstract boolean remove(Task task);
@@ -14,7 +16,9 @@ public abstract class TaskList {
      * To get number of records in the task list
      * @return number of records in this task list
      */
-    public abstract int size();
+    public int size(){
+        return this.size;
+    }
 
     /**
      * To find tasks that is going to be executed at least one time in established time distance

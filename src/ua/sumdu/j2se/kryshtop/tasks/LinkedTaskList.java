@@ -6,20 +6,12 @@ public class LinkedTaskList extends TaskList{
     private Node first;
     private Node last;
 
-    private int size;
-/*    public LinkedTaskList() {
-        size = 0;
-        first = null;
-        last = null;
-    }
-*/
-
     private static class Node {
         private Task value;
         private Node previous;
         private Node next;
 
-        public Node(Task value, Node previous, Node next) {
+        Node(Task value, Node previous, Node next) {
             this.value = value;
             this.previous = previous;
             this.next = next;
@@ -87,16 +79,7 @@ public class LinkedTaskList extends TaskList{
         return false;
     }
 
-    /**
-     * To get number of records in the task list
-     * @return number of records in this task list
-     */
-    public int size(){
-        return this.size;
-    }
-
-
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         return first == null;
     }
 }

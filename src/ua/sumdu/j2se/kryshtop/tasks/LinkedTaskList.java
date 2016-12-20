@@ -1,6 +1,5 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
-import java.util.NoSuchElementException;
 
 public class LinkedTaskList extends TaskList{
     private Node first;
@@ -19,7 +18,9 @@ public class LinkedTaskList extends TaskList{
     }
 
     @Override
-    public void add(Task task) {
+    public void add(Task task) throws NullTaskException {
+        if(task == null) throw new NullTaskException("Task == null");
+
         if(isEmpty()){
             first = new Node(task, null, null);
             last = first;
@@ -34,7 +35,7 @@ public class LinkedTaskList extends TaskList{
     }
 
     @Override
-    public Task getTask(int index){
+    public Task getTask(int index)throws InvalidTaskIndexException{
         Node buffer = first;
         for(int i=0; i < size; i++){
             if(i == index){
@@ -42,8 +43,7 @@ public class LinkedTaskList extends TaskList{
             }
             buffer = buffer.next;
         }
-        throw new NoSuchElementException("No such element in the list");
-
+        throw new InvalidTaskIndexException("Wrong index");
     }
 
     @Override

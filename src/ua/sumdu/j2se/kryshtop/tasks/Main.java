@@ -3,6 +3,7 @@ package ua.sumdu.j2se.kryshtop.tasks;
 public class Main {
     public static void main(String[] args) {
         TaskList organizer = new ArrayTaskList();
+
         Task run = new Task("Everyday run", 0);
         Task date = new Task("Date with Jane", 4);
         Task test = new Task("Test", 0);
@@ -13,6 +14,7 @@ public class Main {
         Task D = new Task("D", 0);
         Task E = new Task("E", 0);
 
+        //organizer.add(new Task("A", 0));
 
         System.out.println("Add tasks");
         int j = 0;

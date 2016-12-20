@@ -1,23 +1,21 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
-/**
- * Created by user on 08.12.2016.
- */
+
 public abstract class TaskList {
     protected int size;
 
-    public abstract void add(Task task);
+    public abstract void add(Task task) throws NullTaskException;
 
     public abstract boolean remove(Task task);
 
-    public abstract Task getTask(int index);
+    public abstract Task getTask(int index) throws InvalidTaskIndexException;
 
     /**
      * To get number of records in the task list
      * @return number of records in this task list
      */
     public int size(){
-        return this.size;
+        return size;
     }
 
     /**
@@ -28,13 +26,11 @@ public abstract class TaskList {
      */
     public ArrayTaskList incoming(int from, int to){
         ArrayTaskList incomingTaskList = new ArrayTaskList();
-        for (int i=0; i < this.size(); i++) {
-            if (this.getTask(i).nextTimeAfter(from) != -1 && this.getTask(i).nextTimeAfter(from) <= to ){
-                incomingTaskList.add(this.getTask(i));
+        for (int i=0; i < size(); i++) {
+            if (getTask(i).nextTimeAfter(from) != -1 && getTask(i).nextTimeAfter(from) <= to ){
+                incomingTaskList.add(getTask(i));
             }
         }
         return incomingTaskList;
     }
-    //TODO: make an exception for incoming() - return NULL (if incomingTaskList is NULL)
-
  }

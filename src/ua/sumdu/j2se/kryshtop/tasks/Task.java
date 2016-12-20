@@ -42,7 +42,7 @@ public class Task {
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public void setTitle(String title) {
@@ -50,7 +50,7 @@ public class Task {
     }
 
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
     public void setActive(boolean active) {
@@ -62,18 +62,21 @@ public class Task {
      * @return time of performance (if task repeats - return start time of repetition)
      */
     public int getTime() {
-        if (this.repeat) return this.start;
-        else return this.time;
+        if (repeat) return start;
+        else return time;
     }
 
     /**
      * To set time for not repeatable tasks.
      * If task is repeatable - will make it not repeatable.
      * @param time time of performance
+     * @throws MinusException if time is minus
      */
-    public void setTime(int time) {
-        if (this.repeat) this.repeat = false;
-        this.time = time;
+    public void setTime(int time) throws MinusException{
+        if (repeat) repeat = false;
+
+        if(time < 0) throw new MinusException("Time can't be minus!");
+        else this.time = time;
     }
 
     /**
@@ -81,8 +84,8 @@ public class Task {
      * @return start time (if task is not repeatable - return time of performance)
      */
     public int getStartTime() {
-        if (!this.repeat) return this.time;
-        else return this.start;
+        if (!repeat) return time;
+        else return start;
     }
 
     /**
@@ -90,8 +93,8 @@ public class Task {
      * @return end time (if task is not repeatable - return time of performance)
      */
     public int getEndTime() {
-        if (!this.repeat) return this.time;
-        else return this.end;
+        if (!repeat) return time;
+        else return end;
     }
 
     /**
@@ -99,8 +102,8 @@ public class Task {
      * @return interval (if task is not repeatable - return 0)
      */
     public int getRepeatInterval() {
-        if (!this.repeat) return 0;
-        else return this.interval;
+        if (!repeat) return 0;
+        else return interval;
     }
 
     /**
@@ -109,18 +112,21 @@ public class Task {
      * @param start start time
      * @param end start time
      * @param interval repeat interval
+     * @throws MinusException if start, end, or interval is invalid
      */
-    public void setTime(int start, int end, int interval) {
-        if (!this.repeat) this.repeat = true;
-        else {
-            this.start = start;
-            this.end = end;
-            this.interval = interval;
-        }
+    public void setTime(int start, int end, int interval) throws MinusException{
+        if((start < 0) || (end < 0) || (interval <= 0) || (end <= start))
+                throw new MinusException("You have entered a wrong start, end or interval");
+
+        if (!repeat) repeat = true;
+
+        this.start = start;
+        this.end = end;
+        this.interval = interval;
     }
 
     public boolean isRepeated() {
-        return this.repeat;
+        return repeat;
     }
 
     /**
@@ -130,25 +136,25 @@ public class Task {
      * (if task is not performed after established time - return -1)
      */
     public int nextTimeAfter(int current) {
-        if (!this.active) {
+        if (!active) {
             return -1;
         }
 
-        if (!this.repeat) {
-            if (this.time <= current) {
+        if (!repeat) {
+            if (time <= current) {
                 return -1;
-            } else return this.time;
+            } else return time;
         }
         else {
-            if (current >= this.end) {
+            if (current >= end) {
                 return -1;
             }
             else {
-                int time = this.start;
+                int time = start;
                 while (time <= current) {
-                    time += this.interval;
+                    time += interval;
                 }
-                if (time > this.end)  return -1;
+                if (time > end)  return -1;
                 return time;
             }
 

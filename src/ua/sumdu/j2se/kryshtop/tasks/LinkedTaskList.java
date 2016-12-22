@@ -1,6 +1,11 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
 
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.InvalidTaskIndexException;
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.NullTaskException;
+
+import java.util.Iterator;
+
 public class LinkedTaskList extends TaskList{
     private Node first;
     private Node last;
@@ -35,7 +40,7 @@ public class LinkedTaskList extends TaskList{
     }
 
     @Override
-    public Task getTask(int index)throws InvalidTaskIndexException{
+    public Task getTask(int index)throws InvalidTaskIndexException {
         Node buffer = first;
         for(int i=0; i < size; i++){
             if(i == index){
@@ -54,6 +59,7 @@ public class LinkedTaskList extends TaskList{
         if(size == 1){
             first = null;
             last = null;
+            size--;
             return true;
         }
         Node buffer = first;
@@ -81,5 +87,80 @@ public class LinkedTaskList extends TaskList{
 
     private boolean isEmpty() {
         return first == null;
+    }
+
+    @Override
+    public Iterator<Task> iterator() {
+        return new Iterator<Task>() {
+            int marker = 0;
+
+            @Override
+            public boolean hasNext() { return size() > marker; }
+
+            @Override
+            public Task next() {
+                if(!hasNext()) throw new IllegalStateException();
+                return getTask(marker++);
+            }
+
+            @Override
+            public void remove() {
+                if(marker == 0) throw new IllegalStateException();
+                LinkedTaskList.this.remove(getTask(--marker));
+            }
+        };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LinkedTaskList tasks = (LinkedTaskList) o;
+
+        if (size() != tasks.size()) return false;
+
+        for (int i=0; i < size(); i++){
+            if (!getTask(i).equals(tasks.getTask(i))){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + size();
+
+        for(int i=0; i < size(); i++){
+            result = 37 * result + getTask(i).hashCode();
+        }
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "LinkedTaskList{ size=" + size() + ", taskList=";
+        for(Task task : this) {
+            result += task.toString();
+            result += " ";
+        }
+        result += '}';
+
+        return result;
+    }
+
+    @Override
+    public TaskList clone(){
+        TaskList outputTaskList = new LinkedTaskList();
+
+        for(Task task : this){
+            outputTaskList.add(task);
+        }
+
+        return outputTaskList;
     }
 }

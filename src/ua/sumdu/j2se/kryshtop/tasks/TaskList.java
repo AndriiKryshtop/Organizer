@@ -1,7 +1,10 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.InvalidTaskIndexException;
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.NullTaskException;
 
-public abstract class TaskList {
+
+public abstract class TaskList implements Iterable<Task>, Cloneable{
     protected int size;
 
     public abstract void add(Task task) throws NullTaskException;

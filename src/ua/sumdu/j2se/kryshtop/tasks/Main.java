@@ -1,8 +1,13 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
+import com.sun.org.apache.xpath.internal.operations.Minus;
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.InvalidTaskIndexException;
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.MinusException;
+
 public class Main {
     public static void main(String[] args) {
-        TaskList organizer = new ArrayTaskList();
+        TaskList organizer = new LinkedTaskList();
+        TaskList organizer2 = new LinkedTaskList();
 
         Task run = new Task("Everyday run", 0);
         Task date = new Task("Date with Jane", 4);
@@ -17,18 +22,49 @@ public class Main {
         //organizer.add(new Task("A", 0));
 
         System.out.println("Add tasks");
-        int j = 0;
 
         Task[] ts = {A, B, C, D, E};
         for (Task t : ts) {
-            System.out.println("Add t: ");
-            System.out.println(t.getTitle());
+            System.out.println("Add " + t.getTitle());
             organizer.add(t);
             System.out.println(organizer.size());
-            j++;
         }
+
+        for (Task t : ts) {
+            System.out.println("Add " + t.getTitle());
+            organizer2.add(t);
+            System.out.println(organizer2.size());
+        }
+
+        for (Task task: organizer) {
+            System.out.println(task.getTitle());
+        }
+        for (Task task: organizer2) {
+            System.out.println(task.getTitle());
+        }
+
+
+        System.out.println(organizer.hashCode());
+        System.out.println(organizer2.hashCode());
+
+        System.out.println(organizer.equals(organizer2));
+        System.out.println(organizer2.equals(organizer));
+
+        organizer2.add(run);
+        organizer2.add(run);
+        organizer2.add(date);
+        organizer2.remove(date);
+        organizer2.remove(D);
+
+        System.out.println(organizer2.getTask(4).getTitle());
+
+        System.out.println(organizer.hashCode());
+        System.out.println(organizer2.hashCode());
+
+        System.out.println(organizer.equals(organizer2));
+        System.out.println(organizer2.equals(organizer));
+
         /*
-        organizer.add(run);
         organizer.add(date);
         organizer.add(test);
         */
@@ -52,8 +88,25 @@ public class Main {
             System.out.println("Task " + i + organizer.getTask(i).getTitle());
         }
 
+        while(organizer.size() > 0){
+            System.out.println("Remove " + organizer.getTask(organizer.size()-1));
+            organizer.remove(organizer.getTask(organizer.size()-1));
+            System.out.println("Complete");
+        }
+
+        System.out.println("Adding task (Task A, 10)");
+        organizer.add(new Task("Task A", 10));
+
+
+    /*    for(int i = 0; i < organizer2.size(); i++){
+            System.out.println("Task " + i + organizer2.getTask(i).getTitle());
+        }
+
         System.out.println(organizer.size());
 
+*/
+
+        /*
         //remove first
         System.out.println("trying to remove " + A.getTitle());
         organizer.remove(A);
@@ -89,5 +142,7 @@ public class Main {
         }
 
         //System.out.println(organizer.incoming(50, 60).getTask(1).getTitle());
+
+        */
     }
 }

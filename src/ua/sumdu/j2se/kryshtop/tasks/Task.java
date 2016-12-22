@@ -1,11 +1,13 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
+import ua.sumdu.j2se.kryshtop.tasks.Exceptions.MinusException;
+
 /**
  * This class describes task.
  * @version 1.0
  * @author Kryshtop Andrii
  **/
-public class Task {
+public class Task implements Cloneable{
     private String title;
     private int time;
     private int start;
@@ -73,10 +75,16 @@ public class Task {
      * @throws MinusException if time is minus
      */
     public void setTime(int time) throws MinusException{
-        if (repeat) repeat = false;
+        if (repeat) {
+            repeat = false;
+        }
 
-        if(time < 0) throw new MinusException("Time can't be minus!");
-        else this.time = time;
+        if(time < 0){
+            throw new MinusException("Time can't be minus!");
+        }
+        else {
+            this.time = time;
+        }
     }
 
     /**
@@ -160,5 +168,76 @@ public class Task {
 
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        if (active != task.active) return false;
+        if (repeat != task.repeat) return false;
+
+        if (repeat) {
+            if (start != task.start) return false;
+            if (end != task.end) return false;
+            if (interval != task.interval) return false;
+        }
+        else {
+            if (time != task.time) return false;
+        }
+
+        return title.equals(task.title);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + (active ? 1 : 0);
+        result = 31 * result + (repeat ? 1 : 0);
+        if(repeat){
+            result = 31 * result + start;
+            result = 31 * result + end;
+            result = 31 * result + interval;
+        }
+        else {
+            result = 31 * result + time;
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "title='" + title + '\'' +
+                ", time=" + time +
+                ", start=" + start +
+                ", end=" + end +
+                ", interval=" + interval +
+                ", active=" + active +
+                ", repeat=" + repeat +
+                '}';
+    }
+
+    @Override
+    public Task clone() {
+        Task outputTask;
+        if(this.repeat) {
+            outputTask = new Task(title, start, end, interval);
+            outputTask.time = time;
+            outputTask.active = active;
+            outputTask.repeat = repeat;
+        }
+        else {
+            outputTask = new Task(title, time);
+            outputTask.start = start;
+            outputTask.end = end;
+            outputTask.interval = interval;
+            outputTask.repeat = repeat;
+            outputTask.active = active;
+        }
+        return outputTask;
     }
 }

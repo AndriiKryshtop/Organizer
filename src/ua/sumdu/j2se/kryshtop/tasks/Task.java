@@ -1,5 +1,10 @@
 package ua.sumdu.j2se.kryshtop.tasks;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ua.sumdu.j2se.kryshtop.tasks.Exceptions.MinusException;
 
 /**
@@ -7,11 +12,11 @@ import ua.sumdu.j2se.kryshtop.tasks.Exceptions.MinusException;
  * @version 1.0
  * @author Kryshtop Andrii
  **/
-public class Task implements Cloneable{
+public class Task implements Cloneable, Serializable{
     private String title;
-    private int time;
-    private int start;
-    private int end;
+    private Date time;
+    private Date start;
+    private Date end;
     private int interval;
     private boolean active;
     private boolean repeat;
@@ -22,7 +27,7 @@ public class Task implements Cloneable{
      * @param title title of the task
      * @param time a time when the task performed
      */
-    public Task(String title, int time) {
+    public Task(String title, Date time) {
         this.title = title;
         this.time = time;
     }
@@ -35,7 +40,7 @@ public class Task implements Cloneable{
      * @param end end of the distance
      * @param interval interval of task performance
      */
-    public Task(String title, int start, int end, int interval) {
+    public Task(String title, Date start, Date end, int interval) {
         this.title = title;
         this.start = start;
         this.end = end;
@@ -63,7 +68,7 @@ public class Task implements Cloneable{
      * To get time of performance for tasks, that do not repeat.
      * @return time of performance (if task repeats - return start time of repetition)
      */
-    public int getTime() {
+    public Date getTime() {
         if (repeat) return start;
         else return time;
     }
@@ -74,16 +79,11 @@ public class Task implements Cloneable{
      * @param time time of performance
      * @throws MinusException if time is minus
      */
-    public void setTime(int time) throws MinusException{
+    public void setTime(Date time){
+        this.time = time;
+
         if (repeat) {
             repeat = false;
-        }
-
-        if(time < 0){
-            throw new MinusException("Time can't be minus!");
-        }
-        else {
-            this.time = time;
         }
     }
 
@@ -91,7 +91,7 @@ public class Task implements Cloneable{
      * To get start time.
      * @return start time (if task is not repeatable - return time of performance)
      */
-    public int getStartTime() {
+    public Date getStartTime() {
         if (!repeat) return time;
         else return start;
     }
@@ -100,7 +100,7 @@ public class Task implements Cloneable{
      * To get end time.
      * @return end time (if task is not repeatable - return time of performance)
      */
-    public int getEndTime() {
+    public Date getEndTime() {
         if (!repeat) return time;
         else return end;
     }
@@ -109,9 +109,8 @@ public class Task implements Cloneable{
      * To get repeat interval.
      * @return interval (if task is not repeatable - return 0)
      */
-    public int getRepeatInterval() {
-        if (!repeat) return 0;
-        else return interval;
+    public int getRepeatInterval(){
+        return interval;
     }
 
     /**
@@ -122,9 +121,10 @@ public class Task implements Cloneable{
      * @param interval repeat interval
      * @throws MinusException if start, end, or interval is invalid
      */
-    public void setTime(int start, int end, int interval) throws MinusException{
-        if((start < 0) || (end < 0) || (interval <= 0) || (end <= start))
-                throw new MinusException("You have entered a wrong start, end or interval");
+    public void setTime(Date start, Date end, int interval) throws MinusException{
+        if((end.compareTo(start) <= 0)
+                || (interval == 0))
+            throw new MinusException("You have entered a wrong start, end or interval");
 
         if (!repeat) repeat = true;
 
@@ -143,27 +143,27 @@ public class Task implements Cloneable{
      * @return nest time of task performance
      * (if task is not performed after established time - return -1)
      */
-    public int nextTimeAfter(int current) {
+    public Date nextTimeAfter(Date current){
         if (!active) {
-            return -1;
+            return null;
         }
 
         if (!repeat) {
-            if (time <= current) {
-                return -1;
+            if (time.compareTo(current) != 1) {
+                return null;
             } else return time;
         }
         else {
-            if (current >= end) {
-                return -1;
+            if (end.compareTo(current) == -1) {
+                return null;
             }
             else {
-                int time = start;
-                while (time <= current) {
-                    time += interval;
+                Date buffer = (Date)start.clone();
+                while (buffer.compareTo(current) != 1) {
+                    buffer.setTime(buffer.getTime() + (interval * 1000L));
                 }
-                if (time > end)  return -1;
-                return time;
+                if (buffer.compareTo(end) == 1)  return null; 
+                return buffer;
             }
 
         }
@@ -181,12 +181,12 @@ public class Task implements Cloneable{
         if (repeat != task.repeat) return false;
 
         if (repeat) {
-            if (start != task.start) return false;
-            if (end != task.end) return false;
+            if (!start.equals(task.start)) return false;
+            if (!end.equals(task.end)) return false;
             if (interval != task.interval) return false;
         }
         else {
-            if (time != task.time) return false;
+            if (!time.equals(task.time)) return false;
         }
 
         return title.equals(task.title);
@@ -194,48 +194,103 @@ public class Task implements Cloneable{
 
     @Override
     public int hashCode() {
-        int result = title.hashCode();
+        int result = (title == null? 0 : title.hashCode());
         result = 31 * result + (active ? 1 : 0);
         result = 31 * result + (repeat ? 1 : 0);
         if(repeat){
-            result = 31 * result + start;
-            result = 31 * result + end;
-            result = 31 * result + interval;
+            result = 31 * result + (start == null? 0 : start.hashCode());
+            result = 31 * result + (end == null? 0 : end.hashCode());
+            result = 37 * result + interval;
         }
         else {
-            result = 31 * result + time;
+            result = 31 * result + (time == null? 0 : time.hashCode());
         }
         return result;
     }
 
     @Override
     public String toString() {
-        return "Task{" +
-                "title='" + title + '\'' +
-                ", time=" + time +
-                ", start=" + start +
-                ", end=" + end +
-                ", interval=" + interval +
-                ", active=" + active +
-                ", repeat=" + repeat +
-                '}';
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        String task;
+
+        String title = getTitle();
+        String time = "";
+        String inactive = "";
+
+       /* if(title.contains("\"")) {
+            for (int index = 0; index < title.length() - 1; index += 2) {
+                if (title.indexOf("\"", index) != -1) {
+                    index = title.indexOf("\"", index);
+                    title = "" + title.substring(0, index) + "\""
+                            + title.substring(index, title.length());
+                } else break;
+            }
+        }
+        */
+
+        if(isRepeated() == true){
+            String intervalString;
+            int interval = getRepeatInterval();
+
+            String days = "";
+            int day = 86400;
+
+            if((interval / day) >= 1){
+                days += (interval / day) + " day";
+                if((interval / day) > 1) days += "s";
+                else days += " ";
+                interval = interval % day;
+            }
+
+            String hours = "";
+            int hour = 3600;
+            if((interval / hour) >= 1){
+                hours += (interval / hour) + " hour";
+                if((interval / hour) > 1) hours += "s";
+                interval = interval % hour;
+            }
+
+            String minutes = "";
+            int minute = 60;
+            if((interval / minute) >= 1){
+                days += "" + (interval / minute) + " minute";
+                if((interval / minute) > 1) minutes += "s";
+            }
+
+            String seconds = "";
+            if (interval != 0){
+                seconds = " " + interval + "second";
+                if(interval > 1) seconds += "s";
+            }
+
+            intervalString = days + hours + minutes + seconds;
+
+            time += "from [" + dateFormat.format(getTime()) +
+                    "] to [" + dateFormat.format(getEndTime()) +
+                    "] every [" + intervalString + "]";
+        }
+        else{
+            time += "at [" + dateFormat.format(getTime()) + "]";
+        }
+
+        if(!isActive()) {
+            inactive = " inactive";
+        }
+
+        task = "\"" + title + "\" " + time + inactive;
+
+        return task;
     }
 
     @Override
     public Task clone() {
         Task outputTask;
         if(this.repeat) {
-            outputTask = new Task(title, start, end, interval);
-            outputTask.time = time;
+            outputTask = new Task(title, (Date)start.clone(), (Date)end.clone(), interval);
             outputTask.active = active;
-            outputTask.repeat = repeat;
         }
         else {
-            outputTask = new Task(title, time);
-            outputTask.start = start;
-            outputTask.end = end;
-            outputTask.interval = interval;
-            outputTask.repeat = repeat;
+            outputTask = new Task(title, (Date)time.clone());
             outputTask.active = active;
         }
         return outputTask;

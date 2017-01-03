@@ -3,8 +3,10 @@ package ua.sumdu.j2se.kryshtop.tasks;
 import ua.sumdu.j2se.kryshtop.tasks.Exceptions.InvalidTaskIndexException;
 import ua.sumdu.j2se.kryshtop.tasks.Exceptions.NullTaskException;
 
+import java.io.Serializable;
 
-public abstract class TaskList implements Iterable<Task>, Cloneable{
+
+public abstract class TaskList implements Iterable<Task>, Cloneable, Serializable{
     protected int size;
 
     public abstract void add(Task task) throws NullTaskException;
@@ -21,19 +23,36 @@ public abstract class TaskList implements Iterable<Task>, Cloneable{
         return size;
     }
 
-    /**
-     * To find tasks that is going to be executed at least one time in established time distance
-     * @param from start of a time distance
-     * @param to end of a time distance
-     * @return subset of tasks that are planed for performance in established time distance at least one time
-     */
-    public ArrayTaskList incoming(int from, int to){
-        ArrayTaskList incomingTaskList = new ArrayTaskList();
-        for (int i=0; i < size(); i++) {
-            if (getTask(i).nextTimeAfter(from) != -1 && getTask(i).nextTimeAfter(from) <= to ){
-                incomingTaskList.add(getTask(i));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TaskList tasks = (TaskList) o;
+
+        if (size() != tasks.size()) return false;
+
+        for (int i=0; i < size(); i++){
+            if (!getTask(i).equals(tasks.getTask(i))){
+                return false;
             }
         }
-        return incomingTaskList;
+
+        return true;
     }
- }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + size();
+
+        for(int i=0; i < size(); i++){
+            result = 37 * result + (getTask(i) == null ? 0 : getTask(i).hashCode());
+        }
+
+        return result;
+    }
+
+    @Override
+    public abstract String toString();
+}

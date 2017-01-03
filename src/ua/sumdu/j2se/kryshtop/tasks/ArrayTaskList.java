@@ -3,7 +3,6 @@ package ua.sumdu.j2se.kryshtop.tasks;
 import ua.sumdu.j2se.kryshtop.tasks.Exceptions.InvalidTaskIndexException;
 import ua.sumdu.j2se.kryshtop.tasks.Exceptions.NullTaskException;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -93,55 +92,26 @@ public class ArrayTaskList extends TaskList {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public ArrayTaskList clone(){
+        ArrayTaskList outputTaskList = new ArrayTaskList();
 
-        ArrayTaskList tasks = (ArrayTaskList) o;
-
-        if (tasks.size() != this.size()) return false;
-
-        for (int i=0; i < size(); i++){
-            if (!getTask(i).equals(tasks.getTask(i))){
-                return false;
-            }
+        for(Task task : this){
+            outputTaskList.add(task);
         }
 
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 17;
-        result = 37 * result + size();
-
-        for(int i=0; i < size(); i++){
-            result = 37 * result + getTask(i).hashCode();
-        }
-
-        return result;
+        return outputTaskList;
     }
 
     @Override
     public String toString() {
         String result = "ArrayTaskList{ size=" + size() + ", taskList=";
-        for(Task task : taskList) {
+        for(Task task : this) {
             result += task.toString();
             result += " ";
         }
         result += '}';
+
         return result;
-    }
-
-    @Override
-    public TaskList clone(){
-        TaskList outputTaskList = new ArrayTaskList();
-
-        for (int i=0; i < size(); i++){
-            outputTaskList.add(taskList[i]);
-        }
-
-        return outputTaskList;
     }
 }
 
